@@ -1,0 +1,162 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+type CartsProducts {
+    id        String @map("_id") @db.ObjectId
+    colorId   String @db.ObjectId
+    productId String @db.ObjectId
+    quantity  Int
+    sizeId    String @db.ObjectId
+}
+
+model addresses {
+    id         String    @id @default(auto()) @map("_id") @db.ObjectId
+    city       String
+    customerId String    @db.ObjectId
+    customer   customers @relation(fields: [customerId], references: [id])
+    email      String
+    name       String
+    nearby     String
+    phone      String
+    pincode    String
+    state      String
+    street     String
+    createdAt  DateTime  @db.Date
+    updatedAt  DateTime  @db.Date
+}
+
+model billboards {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    v         Int      @map("__v")
+    createdAt DateTime @db.Date
+    imageUrl  String
+    label     String
+    storeId   String   @db.ObjectId
+    updatedAt DateTime @db.Date
+}
+
+model carts {
+    id         String          @id @default(auto()) @map("_id") @db.ObjectId
+    v          Int             @map("__v")
+    customerId String          @unique @db.ObjectId
+    products   CartsProducts[]
+}
+
+model categories {
+    id          String   @id @default(auto()) @map("_id") @db.ObjectId
+    v           Int      @map("__v")
+    billboardId String   @db.ObjectId
+    createdAt   DateTime @db.Date
+    name        String
+    storeId     String   @db.ObjectId
+    updatedAt   DateTime @db.Date
+}
+
+model colors {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    v         Int      @map("__v")
+    createdAt DateTime @db.Date
+    name      String
+    storeId   String   @db.ObjectId
+    updatedAt DateTime @db.Date
+    value     String
+}
+
+model customers {
+    id             String      @id @default(auto()) @map("_id") @db.ObjectId
+    v              Int         @map("__v")
+    address        String[]
+    hashedPassword String
+    isVerified     Boolean
+    name           String
+    phone          String      @unique(map: "phone_1")
+    salt           String
+    createdAt      DateTime    @db.Date
+    updatedAt      DateTime    @db.Date
+    addresses      addresses[]
+}
+
+model orderitems {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+}
+
+model orders {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+}
+
+model productimages {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    v         Int      @map("__v")
+    colorId   String   @db.ObjectId
+    createdAt DateTime @db.Date
+    imageUrls String[]
+    productId String?  @db.ObjectId
+    sizeId    String[]
+    storeId   String   @db.ObjectId
+    updatedAt DateTime @db.Date
+}
+
+model products {
+    id             String   @id @default(auto()) @map("_id") @db.ObjectId
+    v              Int      @map("__v")
+    categoryId     String   @db.ObjectId
+    colorId        String[]
+    createdAt      DateTime @db.Date
+    description    String
+    isArchived     Boolean
+    isFeatured     Boolean
+    name           String
+    price          Int
+    productImageId String[]
+    productImages  String[]
+    sizeId         String[]
+    storeId        String   @db.ObjectId
+    updatedAt      DateTime @db.Date
+}
+
+model sizes {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    v         Int      @map("__v")
+    createdAt DateTime @db.Date
+    name      String
+    storeId   String   @db.ObjectId
+    updatedAt DateTime @db.Date
+    value     String
+}
+
+model stores {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    v          Int      @map("__v")
+    billboards String[]
+    categories String[]
+    colors     String[]
+    createdAt  DateTime @db.Date
+    name       String
+    products   String[]
+    sizes      String[]
+    updatedAt  DateTime @db.Date
+    userId     String   @db.ObjectId
+}
+
+model users {
+    id                        String    @id @default(auto()) @map("_id") @db.ObjectId
+    v                         Int       @map("__v")
+    email                     String    @unique(map: "email_1")
+    forgotPasswordToken       String?
+    forgotPasswordTokenExpiry DateTime? @db.Date
+    hashedPassword            String
+    image                     String?
+    isAdmin                   Boolean
+    isVerified                Boolean
+    provider                  String
+    salt                      String
+    username                  String    @unique(map: "username_1")
+    verifyToken               String?
+    verifyTokenExpiry         DateTime? @db.Date
+}
